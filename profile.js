@@ -14,12 +14,11 @@ let selectedColor = null;
 function goToLogin(withNext = false) {
   const file = window.location.pathname.split("/").pop() || "profile.html";
   const next = encodeURIComponent(file + window.location.search);
-  
-  // CORREÇÃO AQUI: Adicionadas as crases ` ` ao redor do texto
-  const target = withNext ? `index.html?next=${next}` : "index.html";
-  
+
+  const target = withNext ? "index.html?next=" + next : "index.html";
   window.location.replace(target);
 }
+
 
 function showToast(message, variant = "success") {
   const toast = document.getElementById("toast");

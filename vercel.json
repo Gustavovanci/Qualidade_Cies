@@ -1,0 +1,30 @@
+{
+  "version": 2,
+
+  "cleanUrls": true,
+
+  "trailingSlash": false,
+
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    }
+  ],
+
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+
+    { "source": "/login", "destination": "/index.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/calendar", "destination": "/calendar.html" },
+    { "source": "/archive", "destination": "/archive.html" },
+    { "source": "/profile", "destination": "/profile.html" },
+    { "source": "/tools", "destination": "/tools.html" }
+  ]
+}

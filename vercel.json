@@ -1,30 +1,26 @@
 {
   "version": 2,
-
   "cleanUrls": true,
-
   "trailingSlash": false,
-
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store"
-        }
-      ]
-    }
-  ],
-
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
 
     { "source": "/login", "destination": "/index.html" },
+    { "source": "/login.html", "destination": "/index.html" },
+
     { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/dashboard.html", "destination": "/dashboard.html" },
+
     { "source": "/calendar", "destination": "/calendar.html" },
+    { "source": "/calendar.html", "destination": "/calendar.html" },
+
     { "source": "/archive", "destination": "/archive.html" },
+    { "source": "/archive.html", "destination": "/archive.html" },
+
     { "source": "/profile", "destination": "/profile.html" },
-    { "source": "/tools", "destination": "/tools.html" }
+    { "source": "/profile.html", "destination": "/profile.html" },
+
+    { "source": "/tools", "destination": "/tools.html" },
+    { "source": "/tools.html", "destination": "/tools.html" }
   ]
 }

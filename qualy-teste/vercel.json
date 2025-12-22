@@ -1,4 +1,15 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "routes": [
+    { "handle": "filesystem" },
+
+    { "src": "^/$", "dest": "/index.html" },
+    { "src": "^/login/?$", "dest": "/index.html" },
+
+    { "src": "^/dashboard/?$", "dest": "/dashboard.html" },
+    { "src": "^/profile/?$", "dest": "/profile.html" },
+    { "src": "^/calendar/?$", "dest": "/calendar.html" },
+    { "src": "^/archive/?$", "dest": "/archive.html" }
+  ]
 }

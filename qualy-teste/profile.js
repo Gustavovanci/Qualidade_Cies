@@ -14,7 +14,7 @@ let selectedColor = null;
 function goToLogin(withNext = false) {
   const file = window.location.pathname.split("/").pop() || "profile.html";
   const next = encodeURIComponent(file + window.location.search);
-  const target = withNext ? `index.html?next=${next}` : "index.html";
+  const target = withNext ? index.html?next=${next} : "index";
   window.location.replace(target);
 }
 

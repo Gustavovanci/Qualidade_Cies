@@ -71,6 +71,6 @@ form.addEventListener("submit", async (e) => {
 onAuthStateChanged(auth, (user) => {
   if (user) {
     const next = getSafeNextUrl();
-    window.location.href = next || "dashboard.html";
+    window.location.href = next || "dashboard";
   }
 });

@@ -1,11 +1,15 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/index.html" },
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "routes": [
+    { "handle": "filesystem" },
 
-    { "source": "/login", "destination": "/index.html" },
-    { "source": "/dashboard", "destination": "/dashboard.html" },
-    { "source": "/profile", "destination": "/profile.html" },
-    { "source": "/calendar", "destination": "/calendar.html" },
-    { "source": "/archive", "destination": "/archive.html" }
+    { "src": "^/$", "dest": "/index.html" },
+    { "src": "^/login/?$", "dest": "/index.html" },
+
+    { "src": "^/dashboard/?$", "dest": "/dashboard.html" },
+    { "src": "^/profile/?$", "dest": "/profile.html" },
+    { "src": "^/calendar/?$", "dest": "/calendar.html" },
+    { "src": "^/archive/?$", "dest": "/archive.html" }
   ]
 }

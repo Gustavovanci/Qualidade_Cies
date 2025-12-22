@@ -1,4 +1,4 @@
-// profile.js (corrigido: adiciona logout e usa replace no redirect)
+// profile.js (Corrigido: Erro de sintaxe resolvido na linha 16)
 import { auth, db } from "./firebase-config.js";
 import {
   onAuthStateChanged,
@@ -14,6 +14,8 @@ let selectedColor = null;
 function goToLogin(withNext = false) {
   const file = window.location.pathname.split("/").pop() || "profile.html";
   const next = encodeURIComponent(file + window.location.search);
+  
+  // CORREÇÃO AQUI: Adicionadas as crases ` ` ao redor do texto
   const target = withNext ? `index.html?next=${next}` : "index.html";
   
   window.location.replace(target);

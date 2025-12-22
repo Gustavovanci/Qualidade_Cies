@@ -14,8 +14,6 @@ let selectedColor = null;
 function goToLogin(withNext = false) {
   const file = window.location.pathname.split("/").pop() || "profile.html";
   const next = encodeURIComponent(file + window.location.search);
-  
-  // CORREÇÃO AQUI: Adicionadas as crases (backticks)
   const target = withNext ? `index.html?next=${next}` : "index.html";
   
   window.location.replace(target);

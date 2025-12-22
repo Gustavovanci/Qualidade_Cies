@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qualy-Cies | Arquivos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/phosphor-icons"></script>
+    <!-- jsPDF para exportar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-bar">
+    <div class="left-nav">
+        <div class="window-controls">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+        </div>
+        <div class="app-title">
+            Qualy-Cies
+            <span class="divider">|</span>
+            Arquivos de análise
+        </div>
+        <nav class="top-menu">
+            <a href="dashboard.html" class="top-link">Kanban</a>
+            <a href="archive.html" class="top-link active">Arquivos</a>
+            <a href="profile.html" class="top-link">Perfil</a>
+        </nav>
+    </div>
+    <div class="right-nav">
+        <div class="user-pill" id="user-display">
+            <div class="avatar" id="user-avatar"></div>
+            <span id="user-name">Usuário</span>
+        </div>
+        <button id="logout-btn" class="btn-icon" title="Sair">
+            <i class="ph-bold ph-sign-out"></i>
+        </button>
+    </div>
+</header>
+
+<main class="main-content">
+    <section class="archive-toolbar">
+        <div class="search-input">
+            <i class="ph-bold ph-magnifying-glass"></i>
+            <input id="archive-search" type="text" placeholder="Buscar por título, unidade, gravidade...">
+        </div>
+        <div class="severity-filter">
+            <button class="chip-filter active" data-severity="all">Todos</button>
+            <button class="chip-filter" data-severity="grave">Grave / Óbito</button>
+            <button class="chip-filter" data-severity="moderado">Moderado</button>
+            <button class="chip-filter" data-severity="leve">Leve / sem dano</button>
+        </div>
+    </section>
+
+    <section id="archive-list" class="archive-list"></section>
+</main>
+
+<div id="toast" class="toast">
+    <span class="toast-icon"><i class="ph-bold ph-check-circle"></i></span>
+    <span id="toast-message">Mensagem</span>
+</div>
+
+<script type="module" src="archive.js"></script>
+</body>
+</html>

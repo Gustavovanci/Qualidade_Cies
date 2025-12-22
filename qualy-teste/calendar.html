@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Qualy-Cies | Calendário</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/phosphor-icons"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="top-bar">
+    <div class="left-nav">
+      <div class="window-controls">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+      </div>
+      <div class="app-title">
+        Qualy-Cies <span class="divider">|</span> Calendário
+      </div>
+    </div>
+    <div class="right-nav">
+      <nav class="top-links">
+        <a href="dashboard.html">Kanban</a>
+        <a href="calendar.html" class="active">Calendário</a>
+        <a href="archive.html">Arquivos</a>
+        <a href="profile.html">Perfil</a>
+      </nav>
+      <div class="user-pill" id="user-display">
+        <div class="avatar" id="user-avatar"></div>
+        <span id="user-name">Usuário</span>
+      </div>
+      <button id="btn-logout" class="btn-icon" title="Sair">
+        <i class="ph-bold ph-sign-out"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="calendar-page">
+    <section>
+      <div class="calendar-header">
+        <div class="calendar-nav">
+          <button id="btn-prev-month" class="btn-icon" title="Mês anterior">
+            <i class="ph-bold ph-caret-left"></i>
+          </button>
+
+          <button id="btn-today" class="btn-secondary small" title="Ir para hoje">
+            Hoje
+          </button>
+
+          <div id="calendar-month-label" class="calendar-month-label">Mês</div>
+
+          <button id="btn-next-month" class="btn-icon" title="Próximo mês">
+            <i class="ph-bold ph-caret-right"></i>
+          </button>
+        </div>
+
+        <div class="calendar-actions" style="display:flex;gap:10px;align-items:center;">
+          <div class="view-toggle" style="display:flex;gap:6px;">
+            <button id="btn-view-month" class="btn-secondary small active" type="button">Mês</button>
+            <button id="btn-view-agenda" class="btn-secondary small" type="button">Agenda</button>
+          </div>
+
+          <button id="btn-new-calendar-event" class="btn-primary small">
+            <i class="ph-bold ph-plus"></i>
+            Novo evento
+          </button>
+        </div>
+      </div>
+
+      <!-- Visão Mês -->
+      <div id="month-view">
+        <div class="calendar-grid">
+          <div class="calendar-weekdays">
+            <span>Dom</span>
+            <span>Seg</span>
+            <span>Ter</span>
+            <span>Qua</span>
+            <span>Qui</span>
+            <span>Sex</span>
+            <span>Sáb</span>
+          </div>
+          <div id="calendar-grid" class="calendar-days"></div>
+        </div>
+      </div>
+
+      <!-- Visão Agenda -->
+      <div id="agenda-view" class="calendar-agenda hidden">
+        <h2 id="agenda-title" style="margin:12px 0 10px;">Agenda</h2>
+        <div id="agenda-list" class="calendar-agenda-list"></div>
+      </div>
+    </section>
+
+    <aside class="calendar-sidebar">
+      <div class="sidebar-card">
+        <h3 id="sidebar-title">Agenda do dia</h3>
+        <div id="sidebar-agenda" class="calendar-agenda-list"></div>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>Legenda</h3>
+        <div class="calendar-legend" style="margin-top:10px;">
+          <span><span class="legend-dot legend-card"></span>Card (data)</span>
+          <span><span class="legend-dot legend-deadline"></span>Prazo (ONA / manual)</span>
+          <span><span class="legend-dot legend-calendar"></span>Evento de calendário</span>
+        </div>
+        <p class="small-text" style="margin-top:10px;line-height:1.35;">
+          Dica: clique em um dia para ver detalhes na lateral. Clique em um item para abrir no Kanban ou ver detalhes.
+        </p>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Modal novo evento de agenda -->
+  <div id="modal-calendar" class="modal-overlay hidden">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2>Novo evento de calendário</h2>
+        <button class="close-btn" onclick="closeModal('modal-calendar')">
+          <i class="ph-bold ph-x"></i>
+        </button>
+      </div>
+      <form id="calendar-event-form">
+        <div class="form-group">
+          <label>Título</label>
+          <input id="cal-title" required placeholder="Ex: Reunião semanal da qualidade" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Data</label>
+            <input id="cal-date" type="date" required />
+          </div>
+          <div class="form-group">
+            <label>Hora (início)</label>
+            <input id="cal-start" type="time" />
+          </div>
+          <div class="form-group">
+            <label>Hora (fim)</label>
+            <input id="cal-end" type="time" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Descrição</label>
+          <textarea id="cal-desc" rows="3" placeholder="Detalhes, pauta, link da reunião..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Participantes (e-mails separados por vírgula)</label>
+          <input id="cal-attendees" placeholder="ex: ana@ciesglobal.org, rapha@ciesglobal.org" />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="closeModal('modal-calendar')">Cancelar</button>
+          <button type="submit" class="btn-primary">Criar evento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal do dia (lista completa, estilo Google '+N mais') -->
+  <div id="modal-day" class="modal-overlay hidden">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2 id="day-modal-title">Dia</h2>
+        <button class="close-btn" onclick="closeModal('modal-day')">
+          <i class="ph-bold ph-x"></i>
+        </button>
+      </div>
+      <div id="day-modal-list" class="archive-list"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" onclick="closeModal('modal-day')">Fechar</button>
+        <button type="button" class="btn-primary" id="day-modal-new">
+          <i class="ph-bold ph-plus"></i>
+          Novo evento
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">
+    <div class="toast-icon"><i class="ph-bold ph-check-circle"></i></div>
+    <span id="toast-message">Mensagem</span>
+  </div>
+
+  <script type="module" src="calendar.js"></script>
+</body>
+</html>

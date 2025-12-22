@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Qualy-Cies | Perfil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/phosphor-icons"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* complementos específicos do card de perfil já estavam aqui */
+    .profile-wrapper {
+      padding: 24px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .profile-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .profile-header {
+      display:flex;
+      align-items:center;
+      gap:16px;
+      margin-bottom:20px;
+    }
+    .profile-avatar-big{
+      width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-weight:600;color:#fff;font-size:20px;
+    }
+    .profile-section-title{
+      font-size:14px;font-weight:600;margin-bottom:8px;text-transform:uppercase;color:#8E8E93;letter-spacing:.08em;
+    }
+    .color-gradient-bar{
+      position:relative;
+      height:18px;
+      border-radius:999px;
+      background: linear-gradient(90deg, red, orange, yellow, lime, cyan, blue, magenta, red);
+      cursor:pointer;
+      margin-top:8px;
+    }
+    .color-thumb{
+      position:absolute;
+      top:50%;
+      transform:translate(-50%,-50%);
+      width:20px;height:20px;border-radius:50%;
+      border:2px solid #fff;
+      box-shadow:0 2px 6px rgba(0,0,0,0.2);
+      pointer-events:none;
+    }
+    .color-preview-dot{
+      width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,0.06);
+    }
+    .profile-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+    @media (max-width: 768px){
+      .profile-grid{ grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+<header class="top-bar">
+  <div class="left-nav">
+    <div class="window-controls">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+    </div>
+    <div class="app-title">
+      Qualy-Cies
+      <span class="divider">|</span>
+      Monitoramento de Eventos
+    </div>
+  </div>
+  <div class="right-nav">
+    <nav class="top-links">
+      <a href="dashboard.html">Kanban</a>
+      <a href="calendar.html">Calendário</a>
+      <a href="archive.html">Arquivos</a>
+      <a href="profile.html" class="active">Perfil</a>
+    </nav>
+    <div class="user-pill" id="user-display">
+      <div class="avatar" id="user-avatar"></div>
+      <span id="user-name">Usuário</span>
+    </div>
+  </div>
+</header>
+
+<main class="main-content" style="overflow-y:auto;">
+  <div class="profile-wrapper">
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="profile-avatar-big" id="profile-avatar-big">U</div>
+        <div>
+          <div id="profile-name" style="font-weight:600;">Usuário</div>
+          <div id="profile-email" style="font-size:13px;color:#8E8E93;">email@ciesglobal.org</div>
+        </div>
+      </div>
+
+      <div class="profile-grid">
+        <div>
+          <div class="profile-section-title">Identidade visual</div>
+          <p style="font-size:13px;color:#636366;">
+            Escolha a cor que vai “pintar” o seu Kanban. Arraste pelo arco‑íris ou clique em qualquer ponto.
+          </p>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+            <div class="color-preview-dot" id="color-preview"></div>
+            <div style="font-size:13px;color:#636366;">
+              <div>Cor atual</div>
+              <div id="color-hex" style="font-family:monospace;font-size:12px;">#ffffff</div>
+            </div>
+          </div>
+          <div class="color-gradient-bar" id="color-gradient">
+            <div class="color-thumb" id="color-thumb" style="left:10%;background:#ff0000;"></div>
+          </div>
+          <button id="btn-save-color" class="btn-primary small" style="margin-top:16px;width:auto;">
+            Salvar cor
+          </button>
+        </div>
+
+        <div>
+          <div class="profile-section-title">Senha de acesso</div>
+          <p style="font-size:13px;color:#636366;margin-bottom:8px;">
+            Atualize sua senha de forma segura. Pode ser necessário entrar novamente após a troca.
+          </p>
+          <div class="form-group">
+            <label>Nova senha</label>
+            <input type="password" id="new-password" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label>Confirmar nova senha</label>
+            <input type="password" id="confirm-password" placeholder="Repita a nova senha">
+          </div>
+          <button id="btn-save-password" class="btn-secondary small" style="margin-top:8px;width:auto;">
+            Atualizar senha
+          </button>
+          <p class="small-text" id="password-status" style="margin-top:6px;font-size:12px;color:#636366;"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="toast" class="toast">
+  <span class="toast-icon"><i class="ph-bold ph-check-circle"></i></span>
+  <span id="toast-message">Mensagem</span>
+</div>
+
+<script type="module" src="profile.js"></script>
+</body>
+</html>

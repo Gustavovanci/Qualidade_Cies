@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Qualy-Cies | Kanban</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/phosphor-icons"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-bar">
+  <div class="left-nav">
+    <div class="window-controls">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+    </div>
+    <div class="app-title">
+      Qualy-Cies <span class="divider">|</span> Monitoramento de Eventos
+    </div>
+  </div>
+  <div class="right-nav">
+    <nav class="top-links">
+      <a href="dashboard.html" class="active">Kanban</a>
+      <a href="calendar.html">Calendário</a>
+      <a href="archive.html">Arquivos</a>
+      <a href="profile.html">Perfil</a>
+    </nav>
+    <div class="user-pill" id="user-display">
+      <div class="avatar" id="user-avatar"></div>
+      <span id="user-name">Usuário</span>
+    </div>
+    <button id="btn-logout" class="btn-icon" title="Sair">
+      <i class="ph-bold ph-sign-out"></i>
+    </button>
+  </div>
+</header>
+
+<main class="main-content">
+  <section class="board-toolbar">
+    <div class="toolbar-left">
+      <button class="crumb-btn" type="button">
+        <i class="ph-bold ph-kanban"></i>
+        Kanban
+      </button>
+      <button id="toggle-indicators" class="link-button" type="button">
+        <span id="toggle-indicators-label">Mostrar indicadores</span>
+        <i class="ph-bold ph-caret-down"></i>
+      </button>
+    </div>
+    <div class="toolbar-right">
+      <div class="search-wrapper collapsed" id="search-wrapper">
+        <i class="ph-bold ph-magnifying-glass"></i>
+        <input id="search-input" type="text" placeholder="Buscar por título, unidade, gravidade...">
+      </div>
+      <button id="btn-toggle-search" class="btn-icon-square" type="button" title="Mostrar/ocultar busca">
+        <i class="ph-bold ph-magnifying-glass"></i>
+      </button>
+      <div class="chip-group" id="severity-filters">
+        <button type="button" class="chip active" data-filter="all">Todos</button>
+        <button type="button" class="chip" data-filter="grave">Grave / Óbito</button>
+        <button type="button" class="chip" data-filter="moderado">Moderado</button>
+        <button type="button" class="chip" data-filter="leve">Leve / sem dano</button>
+      </div>
+      <button id="btn-open-canvas" class="btn-secondary small" type="button">
+        <i class="ph-bold ph-flask"></i> Canvas
+      </button>
+      <button id="btn-new-event" class="btn-primary small" type="button">
+        <i class="ph-bold ph-plus"></i> Novo evento
+      </button>
+    </div>
+  </section>
+
+  <section id="indicators-panel" class="indicators-panel collapsed">
+    <div class="indicator-card">
+      <div class="indicator-label">Eventos abertos</div>
+      <div class="indicator-value" id="ind-open">0</div>
+      <div class="indicator-hint">Backlog + em tratativa</div>
+    </div>
+    <div class="indicator-card">
+      <div class="indicator-label">Dentro do prazo ONA</div>
+      <div class="indicator-value" id="ind-ona">0</div>
+      <div class="indicator-hint" id="ind-ona-detail">0 dentro / 0 vencidos</div>
+    </div>
+    <div class="indicator-card">
+      <div class="indicator-label">Hoje</div>
+      <div class="indicator-value" id="ind-today">0</div>
+      <div class="indicator-hint">Eventos com data de hoje</div>
+    </div>
+    <div class="indicator-card">
+      <div class="indicator-label">Análises completas</div>
+      <div class="indicator-value" id="ind-complete">0</div>
+      <div class="indicator-hint">Ishikawa + PDCA arquivados</div>
+    </div>
+  </section>
+
+  <section class="kanban-wrapper">
+    <div class="kanban-container">
+      <div class="column" id="col-backlog" data-status="backlog" ondragover="allowDrop(event)" ondrop="drop(event)">
+        <div class="col-header border-gray">
+          <span>ANALISANDO</span>
+          <span class="count" id="count-backlog">0</span>
+        </div>
+        <div class="cards-area" id="list-backlog"></div>
+      </div>
+
+      <div class="column" id="col-doing" data-status="doing" ondragover="allowDrop(event)" ondrop="drop(event)">
+        <div class="col-header border-orange">
+          <span>EM TRATATIVA</span>
+          <span class="count" id="count-doing">0</span>
+        </div>
+        <div class="cards-area" id="list-doing"></div>
+      </div>
+
+      <div class="column" id="col-late" data-status="late" ondragover="allowDrop(event)" ondrop="drop(event)">
+        <div class="col-header border-danger">
+          <span>EM ATRASO</span>
+          <span class="count" id="count-late">0</span>
+        </div>
+        <div class="cards-area" id="list-late"></div>
+      </div>
+
+      <div class="column" id="col-done" data-status="done" ondragover="allowDrop(event)" ondrop="drop(event)">
+        <div class="col-header border-green">
+          <span>CONCLUÍDO</span>
+          <span class="count" id="count-done">0</span>
+        </div>
+        <div class="cards-area" id="list-done"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Modal novo evento -->
+<div id="modal-new-event" class="modal-overlay hidden">
+  <div class="modal-window">
+    <div class="modal-header">
+      <h2>Novo card</h2>
+      <button class="close-btn" type="button" onclick="closeModal('modal-new-event')">
+        <i class="ph-bold ph-x"></i>
+      </button>
+    </div>
+    <form id="form-new-event">
+      <div class="form-group">
+        <label>Título</label>
+        <input id="new-title" type="text" required placeholder="Ex: Queda de paciente / Reunião semanal...">
+      </div>
+      <div class="form-group">
+        <label>Descrição</label>
+        <textarea id="new-desc" rows="3" placeholder="Resumo do evento ou da tarefa"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo de card</label>
+          <select id="new-type">
+            <option value="evento">Evento</option>
+            <option value="tarefa">Tarefa</option>
+            <option value="projeto">Projeto</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Gravidade (quando for evento)</label>
+          <select id="new-severity">
+            <option value="nao_classificado">Não classificado</option>
+            <option value="grave">Grave / Óbito</option>
+            <option value="moderado">Moderado</option>
+            <option value="leve">Leve</option>
+            <option value="sem_dano">Evento sem dano</option>
+            <option value="near_miss">Near miss</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Data do evento / tarefa</label>
+          <input id="new-date" type="date">
+        </div>
+        <div class="form-group">
+          <label>Prazo limite (aparece no calendário)</label>
+          <input id="new-deadline" type="date">
+        </div>
+      </div>
+
+      <!-- Campos adicionais (apenas para eventos) - sequência PCT -->
+      <div id="new-event-only" class="pct-section" style="margin-top:10px;">
+        <div class="detail-section-title">Campos do evento (PCT) • opcional</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nº do evento / protocolo</label>
+            <input id="new-event-code" type="text" placeholder="Ex: 1460/25" />
+          </div>
+          <div class="form-group">
+            <label>Data da notificação</label>
+            <input id="new-notification-date" type="date" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome do paciente (opcional)</label>
+            <input id="new-patient-name" type="text" placeholder="Prefira iniciais ou ID interno" />
+          </div>
+          <div class="form-group">
+            <label>Data de nascimento (opcional)</label>
+            <input id="new-patient-dob" type="date" />
+          </div>
+        </div>
+        <p class="small-text">Dica LGPD: evite nome completo se não for essencial.</p>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Unidade / setor</label>
+          <input id="new-unit" type="text" placeholder="Ex: Jardim Prudência, Farmácia, Time Qualidade...">
+        </div>
+        <div class="form-group">
+          <label>Ligado a evento assistencial?</label>
+          <select id="new-quality-related">
+            <option value="sim">Sim</option>
+            <option value="nao">Não, é tarefa interna</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-tertiary small" onclick="closeModal('modal-new-event')">Cancelar</button>
+        <button type="submit" class="btn-primary small">Salvar card</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal detalhe do card -->
+<div id="modal-detail" class="modal-overlay hidden">
+  <div class="modal-window large">
+    <div class="modal-header">
+      <h2 id="detail-title" class="detail-title-edit" contenteditable="true" spellcheck="false">Detalhes do card</h2>
+      <button class="close-btn" type="button" onclick="closeModal('modal-detail')">
+        <i class="ph-bold ph-x"></i>
+      </button>
+    </div>
+
+    <div class="detail-grid">
+      <div>
+        <div class="detail-section-title">Resumo do card</div>
+        <textarea id="detail-desc" rows="3" placeholder="Resumo do evento ou tarefa"></textarea>
+        <div class="pct-actions" style="margin-top:8px;">
+          <button type="button" class="btn-tertiary small" id="btn-save-summary">
+            <i class="ph-bold ph-floppy-disk"></i> Salvar resumo
+          </button>
+        </div>
+
+        <div class="detail-section-title" style="margin-top:12px;">Datas & status</div>
+        <p id="detail-dates" style="font-size:13px;margin-bottom:8px;"></p>
+        <p id="detail-ona" style="font-size:11px;color:var(--text-secondary);"></p>
+
+        <!-- Sequência PCT (apenas para eventos) -->
+        <div id="pct-container" class="pct-stack hidden" style="margin-top:14px;">
+          <div class="pct-section">
+            <div class="detail-section-title">Dados do paciente</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nome do paciente</label>
+                <input id="pct-patient-name" type="text" placeholder="Opcional" />
+              </div>
+              <div class="form-group">
+                <label>Data de nascimento</label>
+                <input id="pct-patient-dob" type="date" />
+              </div>
+            </div>
+          </div>
+
+          <div class="pct-section">
+            <div class="detail-section-title">Dados do evento</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nº do evento</label>
+                <input id="pct-event-code" type="text" placeholder="Ex: 1460/25" />
+              </div>
+              <div class="form-group">
+                <label>Data do evento</label>
+                <input id="pct-event-date" type="date" />
+              </div>
+              <div class="form-group">
+                <label>Data da notificação</label>
+                <input id="pct-notification-date" type="date" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Unidade</label>
+                <input id="pct-unit" type="text" placeholder="Ex: Jardim Prudência" />
+              </div>
+              <div class="form-group">
+                <label>Sistema de notificação</label>
+                <input id="pct-notification-system" type="text" placeholder="Ex: Docnix" />
+              </div>
+            </div>
+          </div>
+
+          <div class="pct-section">
+            <div class="detail-section-title">Notificação</div>
+            <textarea id="pct-notification-text" rows="4" placeholder="Cole aqui a notificação do sistema"></textarea>
+          </div>
+
+          <div class="pct-section">
+            <div class="detail-section-title">Cronologia do evento</div>
+            <textarea id="pct-chronology" rows="8" placeholder="Linha do tempo do prontuário, registros e decisões"></textarea>
+          </div>
+
+          <div class="pct-section">
+            <div class="detail-section-title">Desfecho para o paciente</div>
+            <textarea id="pct-outcome" rows="4" placeholder="Evolução clínica / desfecho"></textarea>
+          </div>
+
+          <div class="pct-section">
+            <div class="detail-section-title">Entrevista (assistencial / médico executor)</div>
+            <textarea id="pct-interview" rows="8" placeholder="Registro da entrevista e esclarecimentos"></textarea>
+          </div>
+
+          <div class="pct-section">
+            <div class="detail-section-title">Dados da análise (time de investigação)</div>
+            <textarea id="pct-investigation-team" rows="4" placeholder="Nome / função (um por linha)"></textarea>
+          </div>
+
+          <div class="pct-section">
+            <div class="detail-section-title">Conclusão do gerenciamento de riscos</div>
+            <textarea id="pct-conclusion" rows="4" placeholder="Conclusões, classificação, recomendações"></textarea>
+          </div>
+
+          <div class="pct-section">
+            <div class="detail-section-title">Plano de ação</div>
+            <p class="small-text">Sugestão: mantenha o plano no 5W2H para rastreabilidade e prazos.</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="btn-secondary small" id="btn-open-5w2h-inline">
+                <i class="ph-bold ph-list-checks"></i> Abrir 5W2H
+              </button>
+              <button type="button" class="btn-secondary small" id="btn-open-fmea-inline">
+                <i class="ph-bold ph-warning"></i> Abrir FMEA / HFMEA
+              </button>
+            </div>
+          </div>
+
+          <div class="pct-actions">
+            <button type="button" class="btn-tertiary small" id="btn-pct-revert">
+              <i class="ph-bold ph-arrow-counter-clockwise"></i> Reverter
+            </button>
+            <button type="button" class="btn-primary small" id="btn-pct-save">
+              <i class="ph-bold ph-floppy-disk"></i> Salvar PCT
+            </button>
+          </div>
+          <p class="small-text" id="pct-save-status"></p>
+        </div>
+      </div>
+
+      <div>
+        <div class="detail-section-title">Ferramentas de análise</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;" id="detail-tools-badges"></div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button type="button" class="btn-secondary small" id="btn-open-ishikawa">
+            <i class="ph-bold ph-fish-simple"></i> Ishikawa
+          </button>
+          <button type="button" class="btn-secondary small" id="btn-open-5w2h">
+            <i class="ph-bold ph-list-checks"></i> 5W2H
+          </button>
+          <button type="button" class="btn-secondary small" id="btn-open-pdca">
+            <i class="ph-bold ph-arrows-clockwise"></i> PDCA
+          </button>
+          <button type="button" class="btn-secondary small" id="btn-open-fmea">
+            <i class="ph-bold ph-warning"></i> FMEA / HFMEA
+          </button>
+          <button type="button" class="btn-secondary small" id="btn-open-notes">
+            <i class="ph-bold ph-note-pencil"></i> Canvas de notas
+          </button>
+        </div>
+
+        <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:8px;">
+          <div class="detail-section-title">Ações rápidas</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <button type="button" class="btn-tertiary small" id="btn-move-doing">
+              <i class="ph-bold ph-arrow-right"></i> Mover para tratativa
+            </button>
+            <button type="button" class="btn-tertiary small" id="btn-move-done">
+              <i class="ph-bold ph-check"></i> Marcar como concluído
+            </button>
+            <button type="button" class="btn-tertiary small" id="btn-archive">
+              <i class="ph-bold ph-archive"></i> Arquivar análise
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal hub de Canvas -->
+<div id="modal-canvas-hub" class="modal-overlay hidden">
+  <div class="modal-window large">
+    <div class="modal-header">
+      <h2>Canvas</h2>
+      <button class="close-btn" type="button" onclick="closeModal('modal-canvas-hub')">
+        <i class="ph-bold ph-x"></i>
+      </button>
+    </div>
+    <div class="detail-grid">
+      <div>
+        <div class="detail-section-title">Novo canvas</div>
+        <form id="form-new-canvas">
+          <div class="form-group">
+            <label>Título</label>
+            <input id="canvas-title" type="text" placeholder="Ex: Riscos da escleroterapia / Planejamento 2025" required>
+          </div>
+          <div class="form-group">
+            <label>Ferramenta</label>
+            <select id="canvas-tool" required>
+              <option value="ishikawa">Ishikawa</option>
+              <option value="5w2h">5W2H</option>
+              <option value="pdca">PDCA</option>
+              <option value="fmea">FMEA / HFMEA</option>
+              <option value="notes">Canvas de notas</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-tertiary small" onclick="closeModal('modal-canvas-hub')">Cancelar</button>
+            <button type="submit" class="btn-primary small">Criar canvas</button>
+          </div>
+        </form>
+      </div>
+      <div>
+        <div class="detail-section-title">Canvases existentes</div>
+        <div id="canvas-list" style="font-size:13px;">
+          <p style="font-size:12px;color:var(--text-secondary);">Carregando...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast">
+  <span class="toast-icon"><i class="ph-bold ph-check-circle"></i></span>
+  <span id="toast-message">Mensagem</span>
+</div>
+
+<script type="module" src="dashboard.js"></script>
+</body>
+</html>

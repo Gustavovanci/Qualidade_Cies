@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Qualy-Cies | Ferramentas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/phosphor-icons"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="tool-body">
+<header class="top-bar">
+  <div class="left-nav">
+    <div class="window-controls">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+    </div>
+    <div class="app-title">
+      Qualy-Cies
+      <span class="divider">|</span>
+      <span id="tool-header-title">Ferramentas</span>
+    </div>
+  </div>
+  <div class="right-nav">
+    <button class="btn-tertiary small" onclick="window.location.href='dashboard.html'">
+      <i class="ph-bold ph-arrow-left"></i> Voltar para Kanban
+    </button>
+    <div id="tool-context-pill" class="user-pill">
+      <div class="avatar" id="tool-avatar"></div>
+      <span id="tool-context-label">Canvas solto</span>
+    </div>
+  </div>
+</header>
+
+<main class="main-content tool-main">
+  <div class="tool-meta">
+    <div>
+      <div class="tool-breadcrumb" id="tool-breadcrumb">Carregando...</div>
+      <div class="tool-subtitle" id="tool-subtitle"></div>
+    </div>
+  </div>
+
+  <!-- ISHIKAWA -->
+  <section id="tool-ishikawa" class="tool-section hidden">
+    <div class="tool-actions">
+      <h3>Diagrama de causa e efeito (Ishikawa)</h3>
+      <div style="display:flex;gap:6px;">
+        <button id="btn-ish-add" class="btn-secondary small">
+          <i class="ph-bold ph-fish-simple"></i> Nova causa
+        </button>
+      </div>
+    </div>
+
+    <div class="ishikawa-layout">
+      <div class="ishikawa-diagram">
+        <div class="ishikawa-axis"></div>
+        <div class="ishikawa-head">
+          <span class="ishikawa-label">Problema</span>
+          <span id="ishikawa-effect-title"
+                contenteditable="true"
+                title="Clique para ajustar a formulação do problema">
+            Evento
+          </span>
+        </div>
+
+        <div class="ishikawa-columns">
+          <div class="ishikawa-column top" data-cat="Método">
+            <div class="ishikawa-column-label">Método</div>
+            <div class="ishikawa-dropzone"
+                 data-cat="Método"
+                 ondragover="ishAllowDrop(event)"
+                 ondrop="ishDrop(event)"></div>
+          </div>
+          <div class="ishikawa-column top" data-cat="Mão de obra">
+            <div class="ishikawa-column-label">Mão de obra</div>
+            <div class="ishikawa-dropzone"
+                 data-cat="Mão de obra"
+                 ondragover="ishAllowDrop(event)"
+                 ondrop="ishDrop(event)"></div>
+          </div>
+          <div class="ishikawa-column top" data-cat="Máquina">
+            <div class="ishikawa-column-label">Máquina</div>
+            <div class="ishikawa-dropzone"
+                 data-cat="Máquina"
+                 ondragover="ishAllowDrop(event)"
+                 ondrop="ishDrop(event)"></div>
+          </div>
+
+          <div class="ishikawa-column bottom" data-cat="Material">
+            <div class="ishikawa-column-label">Material</div>
+            <div class="ishikawa-dropzone"
+                 data-cat="Material"
+                 ondragover="ishAllowDrop(event)"
+                 ondrop="ishDrop(event)"></div>
+          </div>
+          <div class="ishikawa-column bottom" data-cat="Meio ambiente">
+            <div class="ishikawa-column-label">Meio ambiente</div>
+            <div class="ishikawa-dropzone"
+                 data-cat="Meio ambiente"
+                 ondragover="ishAllowDrop(event)"
+                 ondrop="ishDrop(event)"></div>
+          </div>
+          <div class="ishikawa-column bottom" data-cat="Medida">
+            <div class="ishikawa-column-label">Medida</div>
+            <div class="ishikawa-dropzone"
+                 data-cat="Medida"
+                 ondragover="ishAllowDrop(event)"
+                 ondrop="ishDrop(event)"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ishikawa-side">
+        <div id="ishikawa-form" class="inline-form">
+          <div class="form-group">
+            <label>Causa identificada (pense nos 5 porquês)</label>
+            <input id="ishikawa-text" type="text" placeholder="Digite a causa...">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Categoria inicial (6M)</label>
+              <select id="ishikawa-cat">
+                <option value="Método">Método</option>
+                <option value="Mão de obra">Mão de obra</option>
+                <option value="Máquina">Máquina</option>
+                <option value="Material">Material</option>
+                <option value="Meio ambiente">Meio ambiente</option>
+                <option value="Medida">Medida</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Impacto na ocorrência</label>
+              <select id="ishikawa-impact">
+                <option value="1">Baixo</option>
+                <option value="2">Médio</option>
+                <option value="3">Alto</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-tertiary small" onclick="cancelIshikawa()">Limpar</button>
+            <button type="button" class="btn-primary small" onclick="confirmIshikawa()">Adicionar causa</button>
+          </div>
+        </div>
+
+        <div class="ishikawa-root-box">
+          <strong>Causa raiz (insight automático)</strong>
+          <p id="ishikawa-root-text" style="margin-top:4px;font-size:12px;">
+            Ainda não há dados suficientes.
+          </p>
+        </div>
+
+        <div>
+          <label style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.08em;">Pool de causas</label>
+          <div id="ishikawa-pool" class="simple-list" style="max-height:220px;overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5W2H -->
+  <section id="tool-5w2h" class="tool-section hidden">
+    <div class="tool-actions">
+      <h3>Planos de ação (5W2H)</h3>
+      <div style="display:flex;gap:6px;">
+        <button onclick="add5W2H()" class="btn-secondary small">
+          <i class="ph-bold ph-list-plus"></i> Nova ação
+        </button>
+      </div>
+    </div>
+
+    <div id="5w2h-form" class="inline-form hidden">
+      <div class="form-row">
+        <div class="form-group">
+          <label>O que? (What)</label>
+          <input id="w2-what" type="text" placeholder="Ação a ser executada">
+        </div>
+        <div class="form-group">
+          <label>Quem? (Who)</label>
+          <input id="w2-who" type="text" placeholder="Responsável">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Por quê? (Why)</label>
+          <input id="w2-why" type="text" placeholder="Motivo da ação">
+        </div>
+        <div class="form-group">
+          <label>Onde? (Where)</label>
+          <input id="w2-where" type="text" placeholder="Setor / Unidade">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Quando? (When)</label>
+          <input id="w2-when" type="date">
+        </div>
+        <div class="form-group">
+          <label>Quanto custa? (How much)</label>
+          <input id="w2-howmuch" type="text" placeholder="R$ ou recurso necessário">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Como? (How)</label>
+        <textarea id="w2-how" rows="3" placeholder="Passo a passo da implementação"></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-tertiary small" onclick="cancel5W2H()">Cancelar</button>
+        <button type="button" class="btn-primary small" onclick="confirm5W2H()">Salvar ação</button>
+      </div>
+    </div>
+
+    <div id="5w2h-list" class="cards-list-vertical"></div>
+  </section>
+
+  <!-- PDCA -->
+  <section id="tool-pdca" class="tool-section hidden">
+    <div class="tool-actions">
+      <h3>Ciclo PDCA</h3>
+    </div>
+
+    <div class="pdca-layout">
+      <div class="pdca-visual">
+        <div class="pdca-wheel">
+          <div class="pdca-segment pdca-plan">P</div>
+          <div class="pdca-segment pdca-do">D</div>
+          <div class="pdca-segment pdca-check">C</div>
+          <div class="pdca-segment pdca-act">A</div>
+          <div class="pdca-center">
+            <span id="pdca-current-label">Selecione a fase</span>
+          </div>
+        </div>
+        <div class="pdca-legend">
+          <button type="button" class="pdca-chip" data-stage="plan">Planejar</button>
+          <button type="button" class="pdca-chip" data-stage="do">Executar</button>
+          <button type="button" class="pdca-chip" data-stage="check">Checar</button>
+          <button type="button" class="pdca-chip" data-stage="act">Agir</button>
+        </div>
+      </div>
+
+      <div class="pdca-forms">
+        <div class="pdca-stage-form" data-stage="plan">
+          <label>Planejar</label>
+          <textarea id="pdca-plan" rows="4" placeholder="Riscos, objetivos, causas priorizadas..."></textarea>
+        </div>
+        <div class="pdca-stage-form" data-stage="do">
+          <label>Executar</label>
+          <textarea id="pdca-do" rows="4" placeholder="O que foi implementado, responsáveis, prazos..."></textarea>
+        </div>
+        <div class="pdca-stage-form" data-stage="check">
+          <label>Checar</label>
+          <textarea id="pdca-check" rows="4" placeholder="Indicadores, resultados medidos, auditorias internas..."></textarea>
+        </div>
+        <div class="pdca-stage-form" data-stage="act">
+          <label>Agir</label>
+          <textarea id="pdca-act" rows="4" placeholder="Padronização, lições aprendidas, próximos ciclos..."></textarea>
+        </div>
+        <div class="pdca-actions">
+          <button type="button" class="btn-tertiary small" onclick="resetPdca()">Limpar</button>
+          <button type="button" class="btn-primary small" onclick="savePdca()">Salvar PDCA</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FMEA -->
+  <section id="tool-fmea" class="tool-section hidden">
+    <div class="tool-actions">
+      <h3>Análise de modos de falha (FMEA / HFMEA)</h3>
+      <div style="display:flex;gap:6px;">
+        <button onclick="addFmea()" class="btn-secondary small">
+          <i class="ph-bold ph-list-plus"></i> Novo modo de falha
+        </button>
+        <button onclick="generateFmeaTemplate()" class="btn-tertiary small">
+          <i class="ph-bold ph-magic-wand"></i> Gerar template
+        </button>
+      </div>
+    </div>
+
+    <div id="fmea-form" class="inline-form hidden">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Etapa / processo</label>
+          <input id="fmea-step" type="text" placeholder="Ex: Pré-consulta, Procedimento, Pós-procedimento">
+        </div>
+        <div class="form-group">
+          <label>Modo de falha</label>
+          <input id="fmea-failure" type="text" placeholder="O que pode dar errado?">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Causa (por que acontece?)</label>
+          <input id="fmea-cause" type="text" placeholder="Falta de protocolo, falha de comunicação, etc.">
+        </div>
+        <div class="form-group">
+          <label>Efeito (impacto)</label>
+          <input id="fmea-effect" type="text" placeholder="Dano ao paciente, atraso, custo, etc.">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Controles atuais (barreiras existentes)</label>
+        <textarea id="fmea-controls" rows="2" placeholder="Dupla checagem, checklist, protocolo, treinamento, etc."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Severidade (HFMEA)</label>
+          <select id="fmea-severity-cat">
+            <option value="4">4 — Catastrófico (óbito / dano permanente)</option>
+            <option value="3">3 — Maior (dano temporário grave / grande impacto)</option>
+            <option value="2" selected>2 — Moderado (dano temporário / impacto moderado)</option>
+            <option value="1">1 — Menor (sem dano / impacto mínimo)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Probabilidade</label>
+          <select id="fmea-prob-cat">
+            <option value="4">4 — Frequente</option>
+            <option value="3" selected>3 — Ocasional</option>
+            <option value="2">2 — Incomum</option>
+            <option value="1">1 — Remoto</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Pontuação (S×P)</label>
+          <input id="fmea-hazard" type="text" value="6" disabled>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Árvore de decisão (HFMEA)</label>
+        <div class="fmea-decision">
+          <label><input id="fmea-single-point" type="checkbox"> Ponto único de falha</label>
+          <label><input id="fmea-control-effective" type="checkbox" checked> Existe controle efetivo</label>
+          <label><input id="fmea-detectable" type="checkbox" checked> Detectável antes do dano</label>
+        </div>
+        <p class="small-text" id="fmea-recommendation"></p>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Ação recomendada (se necessário)</label>
+          <input id="fmea-action" type="text" placeholder="Ex: protocolar dose, treinar, checklist, etc.">
+        </div>
+        <div class="form-group">
+          <label>Responsável</label>
+          <input id="fmea-owner" type="text" placeholder="Nome / cargo">
+        </div>
+        <div class="form-group">
+          <label>Prazo</label>
+          <input id="fmea-due" type="date">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-tertiary small" onclick="cancelFmea()">Cancelar</button>
+        <button type="button" class="btn-primary small" onclick="confirmFmea()">Salvar modo de falha</button>
+      </div>
+      <p class="small-text">Modelo HFMEA (matriz 4×4) com recomendação automática baseada em pontuação e barreiras.</p>
+    </div>
+
+    <div id="fmea-list" class="fmea-list"></div>
+  </section>
+
+  <!-- Canvas de notas -->
+  <section id="tool-notes" class="tool-section hidden">
+    <div class="tool-actions">
+      <h3>Canvas de notas</h3>
+    </div>
+    <div class="inline-form">
+      <div class="form-group">
+        <label>Notas principais</label>
+        <textarea id="notes-text" rows="10" placeholder="Use este espaço para brainstorm, pauta de reunião, checklist livre..."></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-primary small" onclick="saveNotes()">Salvar notas</button>
+      </div>
+      <p class="small-text" id="notes-status"></p>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast">
+  <span class="toast-icon"><i class="ph-bold ph-check-circle"></i></span>
+  <span id="toast-message">Mensagem</span>
+</div>
+
+<script type="module" src="tools.js"></script>
+</body>
+</html>

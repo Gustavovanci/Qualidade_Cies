@@ -49,7 +49,7 @@ const TOOL_LABELS = {
 function goToLogin(withNext = true) {
   const file = window.location.pathname.split("/").pop() || "tools.html";
   const next = encodeURIComponent(file + window.location.search);
- const target = withNext ? index.html?next=${next} : "./";
+ const target = withNext ? 'index.html?next=${next}' : "./";
   window.location.replace(target);
 }
 
